@@ -1,0 +1,55 @@
+<config xmlns="urn:org:jgroups"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:org:jgroups http://www.jgroups.org/schema/jgroups.xsd">
+
+  <!-- TCP(bindport) and TCPING(initial_hosts, max_dynamic_hosts) will be fully configured dynamically -->
+  <TCP
+          bind_addr="127.0.0.1"
+          bind_port="5555"
+          port_range="0"
+          sock_conn_timeout="100"
+          bundler_type="nb"
+  />
+  <TCPPING
+          port_range="0"
+          async_discovery="true"
+  />
+
+  <!-- Send discovery request every 10s so that after a partition, the partitioned element puts itself back into the cluster -->
+  <MERGE3
+          max_interval="10000"
+          min_interval="1000"/>
+  <FD_SOCK/>
+
+  <!-- Exclude members after 5s -->
+  <FD_ALL
+          interval="1000"
+          timeout="5000"
+          timeout_check_interval="500"
+  />
+  <VERIFY_SUSPECT timeout="1500"  />
+  <BARRIER />
+  <pbcast.NAKACK2 xmit_interval="500"
+                  xmit_table_num_rows="100"
+                  xmit_table_msgs_per_row="2000"
+                  xmit_table_max_compaction_time="30000"
+                  use_mcast_xmit="false"
+                  discard_delivered_msgs="true"/>
+  <pbcast.STABLE stability_delay="1000" desired_avg_gossip="50000"
+                 max_bytes="4M"/>
+  <raft.NO_DUPES/>
+  <pbcast.GMS print_local_addr="true" join_timeout="2000"/>
+  <UFC max_credits="2M"
+       min_threshold="0.4"/>
+  <MFC max_credits="2M"
+       min_threshold="0.4"/>
+  <FRAG2 frag_size="60K"  />
+  <RSVP resend_interval="2000" timeout="10000"/>
+  <pbcast.STATE_TRANSFER />
+  <FORK></FORK>
+  <raft.ELECTION election_min_interval="1000" election_max_interval="5000" heartbeat_interval="500"/>
+  <!-- members and id will be configured dynamically -->
+  <!-- if logname is not defined using the system property, it will use raft-id name -->
+  <raft.RAFT resend_interval="1000" max_log_size="200000000" raft_id="A" members="A"/>
+  <raft.REDIRECT/>
+</config>
